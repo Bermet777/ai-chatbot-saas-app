@@ -1,0 +1,175 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Plans {
+  STANDARD
+  PRO
+  ULTIMATE
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}
+
+model User {
+  id        String    @id
+  fullname  String
+  clerkId   String
+  type      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  stripeId  String
+
+  billings  Billings[]
+  campaigns Campaign[]
+  domains   Domain[] 
+}
+
+model Billings {
+  id       String  @id
+  plan     Plans
+  credits  Int 
+
+  userId   String
+  user     User    @relation(fields: [userId], references: [id])
+}
+
+model Campaign {
+  id         String    @id
+  name       String
+  customers  String[] 
+  userId     String
+  createdAt  DateTime  @default(now())
+
+  user       User      @relation(fields: [userId], references: [id])
+
+  domains    Domain[]
+}
+
+model Domain {
+  id          String     @id
+  name        String
+  icon        String
+  userId      String
+  campaignId  String
+
+  user        User       @relation(fields: [userId], references: [id])
+  campaign    Campaign   @relation(fields: [campaignId], references: [id])
+
+  chatbots         Chatbot[]
+  helpdesks        Helpdesk[]
+  filterQuestions  FilterQuestions[]
+  customers        Customer[]
+  products         Product[]
+  bookings         Bookings[]
+}
+
+model Chatbot {
+  id              String   @id
+  welcomeMessage  String
+  icon            String
+  background      String
+  textColor       String
+  helpdesk        Boolean
+
+  domainId        String
+  domain          Domain   @relation(fields: [domainId], references: [id])
+}
+
+model Helpdesk {
+  id        String  @id
+  question  String
+  answer    String
+
+  domainId  String
+  domain    Domain  @relation(fields: [domainId], references: [id])
+}
+
+model FilterQuestions {
+  id        String   @id
+  question  String
+  answered  Boolean
+
+  domainId  String
+  domain    Domain   @relation(fields: [domainId], references: [id])
+}
+
+model Customer {
+  id        String  @id
+  email     String
+
+  domainId  String
+  domain    Domain  @relation(fields: [domainId], references: [id])
+
+  chatRooms         ChatRoom[]
+  customerResponses CustomerResponses[]
+}
+
+model CustomerResponses {
+  id        String  @id
+  question  String
+  answered  Boolean
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+}
+
+model Product {
+  id        String    @id
+  name      String
+  price     Int
+  image     String
+  createdAt DateTime  @default(now())
+
+  domainId  String
+  domain    Domain   @relation(fields: [domainId], references: [id])
+}
+
+model Bookings {
+  id        String   @id
+  date      DateTime
+  slot      String
+  email     String
+  createdAt DateTime @default(now())
+
+  domainId String
+  domain   Domain   @relation(fields: [domainId], references: [id])
+}
+
+model ChatRoom {
+  id         String    @id
+  live       Boolean
+  mailed     Boolean
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  chatMessages ChatMessage[]
+}
+
+model ChatMessage {
+  id          String       @id
+  message     String
+  role        MessageRole
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  seen        Boolean
+
+  chatRoomId  String
+  chatRoom    ChatRoom     @relation(fields: [chatRoomId], references: [id])
+}
