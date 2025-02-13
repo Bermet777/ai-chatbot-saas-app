@@ -63,7 +63,7 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // Ensure correct path to Prisma
+import { prisma } from "@/lib/prisma"; 
 
 export async function POST(req: Request) {
   try {
@@ -110,8 +110,8 @@ export async function POST(req: Request) {
         data: {
           fullname: `${userData.first_name} ${userData.last_name}`,
           clerkId: userData.id,
-          type: "user", // Default role
-          stripeId: "", // Empty or handle Stripe integration separately
+          type: "user", 
+          stripeId: "", 
         },
       });
 
