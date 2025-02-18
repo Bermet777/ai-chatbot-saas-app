@@ -13,17 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Plans {
-  STANDARD
-  PRO
-  ULTIMATE
-}
-
-enum MessageRole {
-  USER
-  ASSISTANT
-}
-
 model User {
   id        String    @id @default(uuid())
   fullname  String
@@ -33,13 +22,13 @@ model User {
   updatedAt DateTime  @updatedAt
   stripeId  String
 
-  billings  Billings[]
+  billings  Billing[]
   campaigns Campaign[]
   domains   Domain[] 
 }
 
-model Billings {
-  id       String  @id
+model Billing {
+  id       String  @id  @default(uuid())
   plan     Plans
   credits  Int 
 
@@ -48,7 +37,7 @@ model Billings {
 }
 
 model Campaign {
-  id         String    @id
+  id         String    @id  @default(uuid())
   name       String
   customers  String[] 
   userId     String
@@ -60,7 +49,7 @@ model Campaign {
 }
 
 model Domain {
-  id          String     @id
+  id          String     @id  @default(uuid())
   name        String
   icon        String
   userId      String
@@ -74,11 +63,11 @@ model Domain {
   filterQuestions  FilterQuestions[]
   customers        Customer[]
   products         Product[]
-  bookings         Bookings[]
+  bookings         Booking[]
 }
 
 model Chatbot {
-  id              String   @id
+  id              String   @id  @default(uuid())
   welcomeMessage  String
   icon            String
   background      String
@@ -90,7 +79,7 @@ model Chatbot {
 }
 
 model Helpdesk {
-  id        String  @id
+  id        String  @id  @default(uuid())
   question  String
   answer    String
 
@@ -99,7 +88,7 @@ model Helpdesk {
 }
 
 model FilterQuestions {
-  id        String   @id
+  id        String   @id  @default(uuid())
   question  String
   answered  Boolean
 
@@ -108,7 +97,7 @@ model FilterQuestions {
 }
 
 model Customer {
-  id        String  @id
+  id        String  @id  @default(uuid())
   email     String
 
   domainId  String
@@ -116,10 +105,11 @@ model Customer {
 
   chatRooms         ChatRoom[]
   customerResponses CustomerResponses[]
+  bookings          Booking[]
 }
 
 model CustomerResponses {
-  id        String  @id
+  id        String  @id  @default(uuid())
   question  String
   answered  Boolean
 
@@ -128,7 +118,7 @@ model CustomerResponses {
 }
 
 model Product {
-  id        String    @id
+  id        String    @id  @default(uuid())
   name      String
   price     Int
   image     String
@@ -138,8 +128,8 @@ model Product {
   domain    Domain   @relation(fields: [domainId], references: [id])
 }
 
-model Bookings {
-  id        String   @id
+model Booking {
+  id        String   @id  @default(uuid())
   date      DateTime
   slot      String
   email     String
@@ -147,6 +137,8 @@ model Bookings {
 
   domainId String
   domain   Domain   @relation(fields: [domainId], references: [id])
+  customerId  String
+  customer  Customer  @relation(fields: [customerId], references: [id])
 }
 
 model ChatRoom {
@@ -172,4 +164,15 @@ model ChatMessage {
 
   chatRoomId  String
   chatRoom    ChatRoom     @relation(fields: [chatRoomId], references: [id])
+}
+
+enum Plans {
+  STANDARD
+  PRO
+  ULTIMATE
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
 }
