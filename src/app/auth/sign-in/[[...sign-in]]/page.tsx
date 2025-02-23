@@ -1,19 +1,18 @@
 "use client";
-
 import { SignIn } from '@clerk/nextjs'
 import { useEffect } from 'react'
 import { useAuth } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 
 export default function SignInPage() {
-  const { isSignedIn } = useAuth()
+  const { isLoaded, isSignedIn } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (isSignedIn) {
-      router.push('/dashboard')
+    if (isLoaded && isSignedIn) {
+      router.replace('/dashboard')
     }
-  }, [isSignedIn])
+  }, [isLoaded, isSignedIn, router])
 
-  return <SignIn />
+  return <SignIn fallbackRedirectUrl="/dashboard"/>
 }

@@ -2,7 +2,7 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; 
+//import { prisma } from "@/lib/prisma"; 
 import { createUserInDB } from "@/actions/user";
 
 export async function POST(req: Request) {
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       });
       console.log("✅ User stored in database successfully.");
     }
-    //   // Store user in database //commented out v1
+    //   // Store user in database //commented out v2
     //   await prisma.user.create({
     //     data: {
     //       fullname: `${userData.first_name} ${userData.last_name }`,
