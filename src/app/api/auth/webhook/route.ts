@@ -2,7 +2,7 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-//import { prisma } from "@/lib/prisma"; 
+import { prisma } from "@/lib/prisma"; 
 import { createUserInDB } from "@/actions/user";
 
 export async function POST(req: Request) {
@@ -44,11 +44,19 @@ export async function POST(req: Request) {
     if (evt.type === "user.created") {
       const userData = evt.data;
       console.log(`🆕 New user created with Clerk ID: ${userData.id}`);
-
-    //   // Store user in database
+      //v3
+      await createUserInDB({
+        fullname: `${userData.first_name} ${userData.last_name}`,
+        clerkId: userData.id,
+        type: "user",
+        stripeId: "", // or handle Stripe integration if needed
+      });
+      console.log("✅ User stored in database successfully.");
+    }
+    //   // Store user in database //commented out v1
     //   await prisma.user.create({
     //     data: {
-    //       fullname: `${userData.first_name} ${userData.last_name}`,
+    //       fullname: `${userData.first_name} ${userData.last_name }`,
     //       clerkId: userData.id,
     //       type: "user", 
     //       stripeId: "", 
@@ -59,19 +67,19 @@ export async function POST(req: Request) {
     // }
 
 
-        const newUser = await createUserInDB({
-          fullname: `${userData.first_name} ${userData.last_name}`,
-          clerkId: userData.id,
-          type: "user",
-          stripeId: "", 
-      });
+      //   const newUser = await createUserInDB({ //commented out v1
+      //     fullname: `${userData.first_name} ${userData.last_name}`,
+      //     clerkId: userData.id,
+      //     type: "user",
+      //     stripeId: "", 
+      // });
 
-      if (newUser) {
-        console.log("✅ User stored in database successfully.");
-      } else {
-        console.log("⚠️ User could not be saved.");
-      }
-    }
+      // if (newUser) {
+      //   console.log("✅ User stored in database successfully.");
+      // } else {
+      //   console.log("⚠️ User could not be saved.");
+      // }
+    
     // Always return a response
     return NextResponse.json({ success: true });
   } catch (error) {

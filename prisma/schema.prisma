@@ -20,9 +20,9 @@ model User {
   type      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  stripeId  String
+  stripeId  String?
 
-  billings  Billing[]
+  billing   Billing?  
   campaigns Campaign[]
   domains   Domain[] 
 }
@@ -32,7 +32,7 @@ model Billing {
   plan     Plans
   credits  Int 
 
-  userId   String
+  userId   String  @unique
   user     User    @relation(fields: [userId], references: [id])
 }
 
@@ -42,10 +42,11 @@ model Campaign {
   customers  String[] 
   userId     String
   createdAt  DateTime  @default(now())
+ 
 
   user       User      @relation(fields: [userId], references: [id])
-
-  domains    Domain[]
+  domain     Domain    @relation(fields: [domainId], references: [id])
+  domainId   String    @unique   
 }
 
 model Domain {
@@ -53,17 +54,17 @@ model Domain {
   name        String
   icon        String
   userId      String
-  campaignId  String
+  
 
   user        User       @relation(fields: [userId], references: [id])
-  campaign    Campaign   @relation(fields: [campaignId], references: [id])
+  campaign    Campaign?  
 
-  chatbots         Chatbot[]
+  chatbot          Chatbot?
   helpdesks        Helpdesk[]
   filterQuestions  FilterQuestions[]
   customers        Customer[]
   products         Product[]
-  bookings         Booking[]
+  booking          Booking?
 }
 
 model Chatbot {
@@ -74,7 +75,7 @@ model Chatbot {
   textColor       String
   helpdesk        Boolean
 
-  domainId        String
+  domainId        String   @unique 
   domain          Domain   @relation(fields: [domainId], references: [id])
 }
 
@@ -105,7 +106,7 @@ model Customer {
 
   chatRooms         ChatRoom[]
   customerResponses CustomerResponses[]
-  bookings          Booking[]
+  bookings           Booking[]
 }
 
 model CustomerResponses {
@@ -135,14 +136,14 @@ model Booking {
   email     String
   createdAt DateTime @default(now())
 
-  domainId String
-  domain   Domain   @relation(fields: [domainId], references: [id])
+  domainId    String    @unique   
+  domain      Domain    @relation(fields: [domainId], references: [id])
   customerId  String
-  customer  Customer  @relation(fields: [customerId], references: [id])
+  customer    Customer  @relation(fields: [customerId], references: [id])
 }
 
 model ChatRoom {
-  id         String    @id
+  id         String    @id  @default(uuid())
   live       Boolean
   mailed     Boolean
   createdAt  DateTime  @default(now())
@@ -155,7 +156,7 @@ model ChatRoom {
 }
 
 model ChatMessage {
-  id          String       @id
+  id          String       @id  @default(uuid())
   message     String
   role        MessageRole
   createdAt   DateTime     @default(now())
