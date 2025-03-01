@@ -14,5 +14,5 @@ export default function SignInPage() {
     }
   }, [isLoaded, isSignedIn, router])
 
-  return <SignIn fallbackRedirectUrl="/dashboard"/>
+  return <SignIn />
 }

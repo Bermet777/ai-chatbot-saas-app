@@ -6,6 +6,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -69,4 +75,22 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+
+
+:root {
+  --sidebar-bg: #f8f9fa;
+  --sidebar-text: #111827;
+}
+
+.dark {
+  --sidebar-bg: #1a202c;
+  --sidebar-text: #e5e7eb;
+}
+
+.sidebar {
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
