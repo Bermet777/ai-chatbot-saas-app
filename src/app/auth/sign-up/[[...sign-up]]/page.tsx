@@ -11,7 +11,7 @@ export default function SignUpPage() {
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
-      router.replace('/dashboard')
+      router.push('/dashboard')
     }
   }, [isLoaded, isSignedIn, router])
 
