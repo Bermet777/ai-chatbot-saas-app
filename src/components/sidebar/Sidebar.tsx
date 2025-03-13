@@ -1,22 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";//added useEffect to fetch domain data from API
 import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 //import { menuItems } from "@/components/sidebar/menuItems";
 import SidebarMenuItem from "./SidebarMenuItem";
-import useTheme from "@/hooks/useTheme";
+import useTheme from "@/hooks/use-theme";
 import { menuGroups } from "@/components/sidebar/menuGroups";
+import DomainMenu from "@/components/sidebar/domain-menu"; //domain option added
 
 // Optionally, if you have heroicons installed:
 import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 
+// Add this type definition
+type Domain = {
+  id: string;
+  name: string;
+  icon: string | null;
+};
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const clerk = useClerk();
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
+  const [domains, setDomains] = useState<Domain[]>([]); // State for domains
+  const [loading, setLoading] = useState(true); // Add loading stat
 
   const [groupExpanded, setGroupExpanded] = useState<Record<string, boolean>>(() => { //new added
     const initial: Record<string, boolean> = {};
@@ -27,6 +36,26 @@ export default function Sidebar() {
     });
     return initial;
   });
+
+  useEffect(() => {
+    const fetchDomains = async () => {
+      try {
+        const response = await fetch('/api/domains');
+        if (!response.ok) {
+          throw new Error('Failed to fetch domains');
+        }
+        const data = await response.json();
+        setDomains(data.domains);
+      } catch (error) {
+        console.error('Error fetching domains:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDomains();
+  }, []);
+
 
   const toggleSidebar = () => setCollapsed((prev) => !prev);
 
@@ -45,6 +74,11 @@ export default function Sidebar() {
       console.error("Error signing out:", error);
     }
   };
+//domain dummy variables
+  // const dummyDomains = [
+  //   { id: "1", name: "example.com", icon: "https://placehold.co/20.png" },
+  //   { id: "2", name: "another.com", icon: null },
+  // ];
 
   return (
     <div
@@ -134,6 +168,19 @@ export default function Sidebar() {
         ))}
       </nav>
 
+      {/* Domain Menu */}
+        {/* <div className="px-2">
+        <DomainMenu domains={dummyDomains} min={false} />
+      </div> */}
+
+      <div className="px-2">
+        {loading ? (
+          <div className="text-center py-2 text-sm text-gray-500">Loading domains...</div>
+        ) : (
+          <DomainMenu domains={domains} min={collapsed} />
+        )}
+      </div>
+
       {/* Sign Out Button */}
       <div className="p-4">
         <button
@@ -147,3 +194,15 @@ export default function Sidebar() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
