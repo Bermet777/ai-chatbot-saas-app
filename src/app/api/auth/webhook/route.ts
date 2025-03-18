@@ -44,6 +44,16 @@ export async function POST(req: Request) {
     if (evt.type === "user.created") {
       const userData = evt.data;
       console.log(`🆕 New user created with Clerk ID: ${userData.id}`);
+      // new code to add the full name 03/05 6 lines
+       // Get email address as fallback for name
+    const email = userData.email_addresses?.[0]?.email_address || "";
+    const firstName = userData.first_name || "";
+    const lastName = userData.last_name || "";
+    
+    // Use email as fallback if no name available
+    const fullname = firstName || lastName 
+      ? `${firstName} ${lastName}`.trim()
+      : email.split('@')[0] || "New User";
       //v3
       await createUserInDB({
         fullname: `${userData.first_name} ${userData.last_name}`,

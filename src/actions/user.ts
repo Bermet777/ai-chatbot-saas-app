@@ -16,7 +16,9 @@ export async function createUserInDB({
   type,
   stripeId,
 }: CreateUserInput): Promise<User> {
-  
+
+  const safeFullname = fullname?.trim() || "New User"; //new code to save user full name 03/05
+  try {
   const existingUser = await prisma.user.findUnique({
     where: { clerkId },
   });
@@ -28,12 +30,19 @@ export async function createUserInDB({
   
   const newUser = await prisma.user.create({
     data: {
-      fullname,
+      fullname: safeFullname,
       clerkId,
       type,
       stripeId,
     },
   });
 
-  return newUser;
+  //return newUser;
+  console.log("New user created:", newUser);
+    return newUser;
+  } catch (error) {
+    console.error("Error in createUserInDB:", error);
+    throw error;
+  }
 }
+
