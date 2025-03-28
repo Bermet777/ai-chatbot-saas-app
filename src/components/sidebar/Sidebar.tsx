@@ -74,11 +74,6 @@ export default function Sidebar() {
       console.error("Error signing out:", error);
     }
   };
-//domain dummy variables
-  // const dummyDomains = [
-  //   { id: "1", name: "example.com", icon: "https://placehold.co/20.png" },
-  //   { id: "2", name: "another.com", icon: null },
-  // ];
 
   return (
     <div
